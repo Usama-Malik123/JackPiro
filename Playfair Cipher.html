@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <title>Playfair Cipher</title>
+
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        h1 {
+            color: #ff0000;
+            margin-top: 30px;
+        }
+
+        .container {
+            margin: 50px auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 600px;
+            border: 2px solid #ff0000;
+            border-radius: 10px;
+        }
+
+        .input-container {
+            margin-bottom: 15px;
+        }
+
+        input[type="text"] {
+    padding: 10px;
+    width: 100%;
+    max-width: 400px; /* Added to limit the width for better centering */
+    margin: 0 auto; /* Center horizontally */
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ff0000;
+    background-color: #333;
+    color: #fff;
+    display: block; /* Ensures the element respects margin settings */
+}
+
+
+        .btn {
+            background-color: #ff0000;
+            color: #fff;
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #cc0000;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #ff0000;
+        }
+
+        .error {
+            color: #ff0000;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Playfair Cipher</h1>
+
+    <div class="container">
+        <!-- User Input Form -->
+        <div class="input-container">
+            <label for="plaintext">Enter Plaintext (for Playfair Cipher):</label>
+            <input type="text" id="plaintext" placeholder="Enter text to encrypt/decrypt">
+        </div>
+
+        <div class="input-container">
+            <label for="key">Enter Key (Alphabetic):</label>
+            <input type="text" id="key" placeholder="Enter key (alphabetic)">
+        </div>
+
+        <div class="input-container">
+            <button class="btn" onclick="playfairCipher('encrypt')">Encrypt</button>
+            <button class="btn" onclick="playfairCipher('decrypt')">Decrypt</button>
+        </div>
+
+        <div class="result">
+            <h3>Result:</h3>
+            <p id="resultText">Your result will appear here</p>
+        </div>
+
+        <div id="errorMessage" class="error"></div>
+    </div>
+
+    <script>
+        // Playfair Cipher Implementation
+        function playfairCipher(action) {
+            var key = document.getElementById("key").value.toUpperCase();
+            var plaintext = document.getElementById("plaintext").value.toUpperCase().replace(/[^A-Z]/g, "").replace(/J/g, "I");
+            var result = "";
+
+            // Validate the Playfair Cipher key
+            if (!/^[A-Za-z]+$/.test(key)) {
+                document.getElementById("errorMessage").innerText = "Please enter a valid alphabetic key for Playfair Cipher!";
+                return;
+            } else {
+                document.getElementById("errorMessage").innerText = "";
+            }
+
+            // Create the Playfair cipher matrix
+            var matrix = generatePlayfairMatrix(key);
+
+            if (action === "encrypt") {
+                var digraphs = getDigraphs(plaintext);
+                result = processPlayfairDigraphs(digraphs, matrix, "encrypt");
+            } else if (action === "decrypt") {
+                var digraphs = getDigraphs(plaintext);
+                result = processPlayfairDigraphs(digraphs, matrix, "decrypt");
+            }
+
+            document.getElementById("resultText").innerText = action === "encrypt" ? "Encrypted Playfair Text: " + result : "Decrypted Playfair Text: " + result;
+        }
+
+        // Function to generate Playfair matrix
+        function generatePlayfairMatrix(key) {
+            var matrix = [];
+            var alphabets = "ABCDEFGHIKLMNOPQRSTUVWXYZ"; // 'J' is merged with 'I'
+            var used = [];
+
+            // Remove duplicate characters in the key
+            for (var i = 0; i < key.length; i++) {
+                if (used.indexOf(key[i]) === -1 && alphabets.indexOf(key[i]) !== -1) {
+                    used.push(key[i]);
+                }
+            }
+
+            // Add remaining letters of the alphabet to the matrix
+            for (var i = 0; i < alphabets.length; i++) {
+                if (used.indexOf(alphabets[i]) === -1) {
+                    used.push(alphabets[i]);
+                }
+            }
+
+            // Create 5x5 matrix
+            for (var i = 0; i < 5; i++) {
+                matrix.push(used.slice(i * 5, (i + 1) * 5));
+            }
+
+            return matrix;
+        }
+
+        // Function to get digraphs from plaintext
+        function getDigraphs(plaintext) {
+            var digraphs = [];
+            for (var i = 0; i < plaintext.length; i += 2) {
+                var first = plaintext[i];
+                var second = plaintext[i + 1] ? plaintext[i + 1] : 'X';
+                if (first === second) {
+                    digraphs.push(first + 'X');
+                } else {
+                    digraphs.push(first + second);
+                }
+            }
+            return digraphs;
+        }
+
+        // Function to process digraphs (encryption or decryption)
+        function processPlayfairDigraphs(digraphs, matrix, action) {
+            var result = "";
+
+            for (var i = 0; i < digraphs.length; i++) {
+                var first = digraphs[i][0];
+                var second = digraphs[i][1];
+
+                var firstPos = findPosition(first, matrix);
+                var secondPos = findPosition(second, matrix);
+
+                if (firstPos[0] === secondPos[0]) {
+                    // Same row rule
+                    result += action === "encrypt" ? matrix[firstPos[0]][(firstPos[1] + 1) % 5] + matrix[secondPos[0]][(secondPos[1] + 1) % 5] : matrix[firstPos[0]][(firstPos[1] + 4) % 5] + matrix[secondPos[0]][(secondPos[1] + 4) % 5];
+                } else if (firstPos[1] === secondPos[1]) {
+                    // Same column rule
+                    result += action === "encrypt" ? matrix[(firstPos[0] + 1) % 5][firstPos[1]] + matrix[(secondPos[0] + 1) % 5][secondPos[1]] : matrix[(firstPos[0] + 4) % 5][firstPos[1]] + matrix[(secondPos[0] + 4) % 5][secondPos[1]];
+                } else {
+                    // Rectangle rule
+                    result += matrix[firstPos[0]][secondPos[1]] + matrix[secondPos[0]][firstPos[1]];
+                }
+            }
+
+            return result;
+        }
+
+        // Function to find position of letter in the Playfair matrix
+        function findPosition(letter, matrix) {
+            for (var row = 0; row < 5; row++) {
+                for (var col = 0; col < 5; col++) {
+                    if (matrix[row][col] === letter) {
+                        return [row, col];
+                    }
+                }
+            }
+            return [-1, -1];
+        }
+    </script>
+</body>
+
+</html>

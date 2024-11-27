@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <title>Vigenère Cipher</title>
+
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        h1 {
+            color: #ff0000;
+            margin-top: 30px;
+        }
+
+        .container {
+            margin: 50px auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 600px;
+            border: 2px solid #ff0000;
+            border-radius: 10px;
+        }
+
+        .input-container {
+            margin-bottom: 15px;
+        }
+
+        input[type="text"] {
+    padding: 10px;
+    width: 100%;
+    max-width: 400px; /* Added to limit the width for better centering */
+    margin: 0 auto; /* Center horizontally */
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ff0000;
+    background-color: #333;
+    color: #fff;
+    display: block; /* Ensures the element respects margin settings */
+}
+
+
+        .btn {
+            background-color: #ff0000;
+            color: #fff;
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #cc0000;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #ff0000;
+        }
+
+        .error {
+            color: #ff0000;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Vigenère Cipher</h1>
+
+    <div class="container">
+        <!-- User Input Form -->
+        <div class="input-container">
+            <label for="plaintext">Enter Plaintext:</label>
+            <input type="text" id="plaintext" placeholder="Enter text to encrypt/decrypt">
+        </div>
+
+        <div class="input-container">
+            <label for="key">Enter Key (Alphabetic):</label>
+            <input type="text" id="key" placeholder="Enter key (alphabetic)">
+        </div>
+
+        <div class="input-container">
+            <button class="btn" onclick="vigenereCipher('encrypt')">Encrypt</button>
+            <button class="btn" onclick="vigenereCipher('decrypt')">Decrypt</button>
+        </div>
+
+        <div class="result">
+            <h3>Result:</h3>
+            <p id="resultText">Your result will appear here</p>
+        </div>
+
+        <div id="errorMessage" class="error"></div>
+    </div>
+
+    <script>
+        // Vigenère Cipher Implementation
+        function vigenereCipher(action) {
+            var key = document.getElementById("key").value.toUpperCase();
+            var plaintext = document.getElementById("plaintext").value.toUpperCase().replace(/[^A-Z]/g, "");
+            var result = "";
+
+            // Validate the Vigenère Cipher key
+            if (!/^[A-Za-z]+$/.test(key)) {
+                document.getElementById("errorMessage").innerText = "Please enter a valid alphabetic key for Vigenère Cipher!";
+                return;
+            } else {
+                document.getElementById("errorMessage").innerText = "";
+            }
+
+            // Process the plaintext with the Vigenère cipher
+            result = processVigenere(plaintext, key, action);
+
+            document.getElementById("resultText").innerText = action === "encrypt" ? "Encrypted Vigenère Text: " + result : "Decrypted Vigenère Text: " + result;
+        }
+
+        // Function to process Vigenère Cipher (Encryption or Decryption)
+        function processVigenere(plaintext, key, action) {
+            var result = "";
+            var keyIndex = 0;
+
+            for (var i = 0; i < plaintext.length; i++) {
+                var p = plaintext[i];
+                var k = key[keyIndex % key.length];
+
+                if (action === "encrypt") {
+                    result += encryptCharacter(p, k);
+                } else if (action === "decrypt") {
+                    result += decryptCharacter(p, k);
+                }
+
+                keyIndex++;
+            }
+
+            return result;
+        }
+
+        // Function to encrypt a character
+        function encryptCharacter(p, k) {
+            var pIndex = p.charCodeAt(0) - 'A'.charCodeAt(0);
+            var kIndex = k.charCodeAt(0) - 'A'.charCodeAt(0);
+            var encryptedIndex = (pIndex + kIndex) % 26;
+            return String.fromCharCode(encryptedIndex + 'A'.charCodeAt(0));
+        }
+
+        // Function to decrypt a character
+        function decryptCharacter(p, k) {
+            var pIndex = p.charCodeAt(0) - 'A'.charCodeAt(0);
+            var kIndex = k.charCodeAt(0) - 'A'.charCodeAt(0);
+            var decryptedIndex = (pIndex - kIndex + 26) % 26;
+            return String.fromCharCode(decryptedIndex + 'A'.charCodeAt(0));
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Basic meta tags -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <title>Monoalphabetic Cipher</title>
+
+    <!-- CSS for the theme and layout -->
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        h1 {
+            color: #ff0000;
+            margin-top: 0;
+        }
+
+        .container {
+            padding: 20px;
+            width: 80%;
+            max-width: 600px;
+            border: 2px solid #ff0000;
+            border-radius: 10px;
+            text-align: left;
+        }
+
+        .input-container {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            padding: 10px;
+            width: 100%; /* Ensure input takes full container width */
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ff0000;
+            background-color: #333;
+            color: #fff;
+            box-sizing: border-box; /* Ensure padding is included in the width */
+        }
+
+        .btn {
+            background-color: #ff0000;
+            color: #fff;
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background-color: #cc0000;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #ff0000;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Caesar Cipher</h1>
+
+        <!-- Plaintext input -->
+        <div class="input-container">
+            <label for="plaintext">Plaintext:</label>
+            <input type="text" id="plaintext" placeholder="Enter text (letters and spaces)">
+        </div>
+
+        <!-- Shift value input -->
+        <div class="input-container">
+            <label for="shift">Shift (an integer between 1 and 25):</label>
+            <input type="number" id="shift" min="1" max="25">
+        </div>
+
+        <!-- Encrypt and Decrypt buttons -->
+        <button class="btn" onclick="monoEncrypt()">Encrypt</button>
+        <button class="btn" onclick="monoDecrypt()">Decrypt</button>
+
+        <!-- Result fields -->
+        <div class="result" id="ciphertext"></div>
+        <div class="result" id="decryptedText"></div>
+    </div>
+
+    <script>
+        // Monoalphabetic Cipher encryption
+        function monoEncrypt() {
+            const plaintext = document.getElementById("plaintext").value.toUpperCase().replace(/ /g, '');
+            const shift = parseInt(document.getElementById("shift").value);
+
+            // Validate input
+            if (!plaintext || shift < 1 || shift > 25 || /[^A-Z ]/.test(plaintext)) {
+                alert("Please provide valid input. Only alphabets and spaces allowed in plaintext and shift between 1-25.");
+                return;
+            }
+
+            let ciphertext = '';
+            for (let i = 0; i < plaintext.length; i++) {
+                if (plaintext[i] >= 'A' && plaintext[i] <= 'Z') {
+                    const charCode = plaintext.charCodeAt(i) - 'A'.charCodeAt(0);
+                    const encryptedChar = String.fromCharCode(((charCode + shift) % 26) + 'A'.charCodeAt(0));
+                    ciphertext += encryptedChar;
+                } else {
+                    ciphertext += plaintext[i]; // Add spaces as they are
+                }
+            }
+
+            document.getElementById("ciphertext").textContent = `Ciphertext: ${ciphertext}`;
+        }
+
+        // Monoalphabetic Cipher decryption
+        function monoDecrypt() {
+            const ciphertext = document.getElementById("ciphertext").textContent.replace('Ciphertext: ', '');
+            const shift = parseInt(document.getElementById("shift").value);
+
+            // Validate input
+            if (!ciphertext || shift < 1 || shift > 25) {
+                alert("Please provide valid input.");
+                return;
+            }
+
+            let decryptedText = '';
+            for (let i = 0; i < ciphertext.length; i++) {
+                if (ciphertext[i] >= 'A' && ciphertext[i] <= 'Z') {
+                    const charCode = ciphertext.charCodeAt(i) - 'A'.charCodeAt(0);
+                    const decryptedChar = String.fromCharCode(((charCode - shift + 26) % 26) + 'A'.charCodeAt(0));
+                    decryptedText += decryptedChar;
+                } else {
+                    decryptedText += ciphertext[i]; // Add spaces as they are
+                }
+            }
+
+            document.getElementById("decryptedText").textContent = `Decrypted Text: ${decryptedText}`;
+        }
+    </script>
+</body>
+
+</html>

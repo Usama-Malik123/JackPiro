@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>Rail Fence Cipher</title>
+
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        h1 {
+            color: #ff0000;
+            margin-top: 30px;
+        }
+
+        .container {
+            margin: 50px auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 600px;
+            border: 2px solid #ff0000;
+            border-radius: 10px;
+        }
+
+        .input-container {
+            margin-bottom: 15px;
+        }
+
+input[type="text"] {
+    padding: 10px;
+    width: 100%;
+    max-width: 400px; /* Added to limit the width for better centering */
+    margin: 0 auto; /* Center horizontally */
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ff0000;
+    background-color: #333;
+    color: #fff;
+    display: block; /* Ensures the element respects margin settings */
+}
+
+
+        .btn {
+            background-color: #ff0000;
+            color: #fff;
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #cc0000;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #ff0000;
+        }
+
+        .error {
+            color: #ff0000;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Rail Fence Cipher</h1>
+
+    <div class="container">
+        <div class="input-container">
+            <label for="plaintext">Enter Plaintext (Alphabetic):</label>
+            <input type="text" id="plaintext" placeholder="Enter text to encrypt/decrypt">
+        </div>
+
+        <div class="input-container">
+            <label for="key">Enter Key (Numerical):</label>
+            <input type="text" id="key" placeholder="Enter number of rails">
+        </div>
+
+        <div class="input-container">
+            <button class="btn" onclick="railFenceCipher('encrypt')">Encrypt</button>
+            <button class="btn" onclick="railFenceCipher('decrypt')">Decrypt</button>
+        </div>
+
+        <div class="result">
+            <h3>Result:</h3>
+            <p id="resultText">Your result will appear here</p>
+        </div>
+
+        <div id="errorMessage" class="error"></div>
+    </div>
+
+    <script>
+        // Function to validate inputs
+        function validateInput() {
+            var plaintext = document.getElementById("plaintext").value.replace(/[^A-Za-z]/g, "").toUpperCase();
+            var key = document.getElementById("key").value;
+
+            if (plaintext === "" || key === "") {
+                document.getElementById("errorMessage").innerText = "Please enter valid plaintext and key!";
+                return false;
+            }
+
+            if (!/^\d+$/.test(key) || parseInt(key) <= 0) {
+                document.getElementById("errorMessage").innerText = "Key must be a positive number!";
+                return false;
+            }
+
+            return true;
+        }
+
+        // Rail Fence Cipher logic
+        function railFenceCipher(action) {
+            if (!validateInput()) return;
+
+            var plaintext = document.getElementById("plaintext").value.toUpperCase().replace(/[^A-Z]/g, "");
+            var key = parseInt(document.getElementById("key").value);
+
+            if (action === "encrypt") {
+                var ciphertext = encryptRailFence(plaintext, key);
+                document.getElementById("resultText").innerText = "Encrypted Text: " + ciphertext;
+            } else if (action === "decrypt") {
+                var decryptedText = decryptRailFence(plaintext, key);
+                document.getElementById("resultText").innerText = "Decrypted Text: " + decryptedText;
+            }
+        }
+
+        // Rail Fence Cipher Encryption
+        function encryptRailFence(plaintext, key) {
+            var rail = new Array(key);
+            for (var i = 0; i < key; i++) {
+                rail[i] = [];
+            }
+
+            var direction = false;
+            var row = 0;
+            var col = 0;
+
+            for (var i = 0; i < plaintext.length; i++) {
+                rail[row][col++] = plaintext[i];
+                if (row === 0 || row === key - 1) direction = !direction;
+                row = direction ? row + 1 : row - 1;
+            }
+
+            var ciphertext = "";
+            for (var i = 0; i < key; i++) {
+                for (var j = 0; j < col; j++) {
+                    if (rail[i][j] !== undefined) {
+                        ciphertext += rail[i][j];
+                    }
+                }
+            }
+
+            return ciphertext;
+        }
+
+        // Rail Fence Cipher Decryption
+        function decryptRailFence(ciphertext, key) {
+            var rail = new Array(key);
+            for (var i = 0; i < key; i++) {
+                rail[i] = [];
+            }
+
+            var direction = false;
+            var row = 0;
+            var col = 0;
+
+            // Initialize the grid
+            for (var i = 0; i < ciphertext.length; i++) {
+                rail[row][col++] = '*';
+                if (row === 0 || row === key - 1) direction = !direction;
+                row = direction ? row + 1 : row - 1;
+            }
+
+            var index = 0;
+            for (var i = 0; i < key; i++) {
+                for (var j = 0; j < col; j++) {
+                    if (rail[i][j] === '*' && index < ciphertext.length) {
+                        rail[i][j] = ciphertext[index++];
+                    }
+                }
+            }
+
+            var result = "";
+            row = 0;
+            col = 0;
+            direction = false;
+
+            for (var i = 0; i < ciphertext.length; i++) {
+                result += rail[row][col++];
+                if (row === 0 || row === key - 1) direction = !direction;
+                row = direction ? row + 1 : row - 1;
+            }
+
+            return result;
+        }
+    </script>
+</body>
+
+</html>

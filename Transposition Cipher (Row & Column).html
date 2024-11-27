@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>Transposition Cipher</title>
+
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        h1 {
+            color: #ff0000;
+            margin-top: 30px;
+        }
+
+        .container {
+            margin: 50px auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 600px;
+            border: 2px solid #ff0000;
+            border-radius: 10px;
+        }
+
+        .input-container {
+            margin-bottom: 15px;
+        }
+
+        input[type="text"] {
+    padding: 10px;
+    width: 100%;
+    max-width: 400px; /* Added to limit the width for better centering */
+    margin: 0 auto; /* Center horizontally */
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ff0000;
+    background-color: #333;
+    color: #fff;
+    display: block; /* Ensures the element respects margin settings */
+}
+
+
+        .btn {
+            background-color: #ff0000;
+            color: #fff;
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #cc0000;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #ff0000;
+        }
+
+        .error {
+            color: #ff0000;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Transposition Cipher (Row & Column)</h1>
+
+    <div class="container">
+        <div class="input-container">
+            <label for="plaintext">Enter Plaintext (Alphabetic):</label>
+            <input type="text" id="plaintext" placeholder="Enter text to encrypt/decrypt">
+        </div>
+
+        <div class="input-container">
+            <label for="key">Enter Key (Numeric for Row, Alphabetic for Column):</label>
+            <input type="text" id="key" placeholder="Enter key">
+        </div>
+
+        <div class="input-container">
+            <button class="btn" onclick="transpositionCipher('encrypt')">Encrypt</button>
+            <button class="btn" onclick="transpositionCipher('decrypt')">Decrypt</button>
+        </div>
+
+        <div class="result">
+            <h3>Result:</h3>
+            <p id="resultText">Your result will appear here</p>
+        </div>
+
+        <div id="errorMessage" class="error"></div>
+    </div>
+
+    <script>
+        function validateInput(plaintext, key) {
+            if (!plaintext || !key) {
+                return "Both plaintext and key are required.";
+            }
+
+            // Validate plaintext (should be alphabetic only)
+            if (!/^[A-Za-z]+$/.test(plaintext)) {
+                return "Plaintext must contain only alphabetic characters.";
+            }
+
+            // Validate key (should be numeric for row transposition or alphabetic for column transposition)
+            if (!/^\d+$/.test(key) && !/^[A-Za-z]+$/.test(key)) {
+                return "Key must be numeric for row transposition or alphabetic for column transposition.";
+            }
+
+            return "";
+        }
+
+        function transpositionCipher(action) {
+            var plaintext = document.getElementById("plaintext").value.toUpperCase().replace(/[^A-Z]/g, "");
+            var key = document.getElementById("key").value.toUpperCase();
+            var errorMessage = validateInput(plaintext, key);
+
+            if (errorMessage) {
+                document.getElementById("errorMessage").innerText = errorMessage;
+                document.getElementById("resultText").innerText = "";
+                return;
+            }
+
+            document.getElementById("errorMessage").innerText = "";
+
+            if (/^\d+$/.test(key)) {
+                // Numeric Key: Perform Row Transposition
+                document.getElementById("resultText").innerText = action === "encrypt" ?
+                    "Encrypted Text: " + rowTranspositionEncrypt(plaintext, key) :
+                    "Decrypted Text: " + rowTranspositionDecrypt(plaintext, key);
+            } else {
+                // Alphabetic Key: Perform Column Transposition
+                document.getElementById("resultText").innerText = action === "encrypt" ?
+                    "Encrypted Text: " + columnTranspositionEncrypt(plaintext, key) :
+                    "Decrypted Text: " + columnTranspositionDecrypt(plaintext, key);
+            }
+        }
+
+        function rowTranspositionEncrypt(plaintext, key) {
+            var numKey = key.split("").map(Number);
+            var rows = Math.ceil(plaintext.length / numKey.length);
+            var grid = Array.from({ length: rows }, () => Array(numKey.length).fill(""));
+
+            for (var i = 0; i < plaintext.length; i++) {
+                grid[Math.floor(i / numKey.length)][i % numKey.length] = plaintext[i];
+            }
+
+            var result = "";
+            numKey.forEach(k => {
+                for (var r = 0; r < rows; r++) {
+                    result += grid[r][k - 1] || "";
+                }
+            });
+
+            return result;
+        }
+
+        function rowTranspositionDecrypt(ciphertext, key) {
+            var numKey = key.split("").map(Number);
+            var rows = Math.ceil(ciphertext.length / numKey.length);
+            var grid = Array.from({ length: rows }, () => Array(numKey.length).fill(""));
+
+            var idx = 0;
+            numKey.forEach(k => {
+                for (var r = 0; r < rows; r++) {
+                    if (idx < ciphertext.length) {
+                        grid[r][k - 1] = ciphertext[idx++];
+                    }
+                }
+            });
+
+            return grid.flat().join("");
+        }
+
+        function columnTranspositionEncrypt(plaintext, key) {
+            var cols = key.length;
+            var rows = Math.ceil(plaintext.length / cols);
+            var grid = Array.from({ length: rows }, () => Array(cols).fill(""));
+
+            for (var i = 0; i < plaintext.length; i++) {
+                grid[Math.floor(i / cols)][i % cols] = plaintext[i];
+            }
+
+            var sortedKey = key.split("").map((k, i) => [k, i]).sort().map(e => e[1]);
+            var result = "";
+
+            sortedKey.forEach(c => {
+                for (var r = 0; r < rows; r++) {
+                    result += grid[r][c] || "";
+                }
+            });
+
+            return result;
+        }
+
+        function columnTranspositionDecrypt(ciphertext, key) {
+            var cols = key.length;
+            var rows = Math.ceil(ciphertext.length / cols);
+            var grid = Array.from({ length: rows }, () => Array(cols).fill(""));
+
+            var sortedKey = key.split("").map((k, i) => [k, i]).sort().map(e => e[1]);
+            var idx = 0;
+
+            sortedKey.forEach(c => {
+                for (var r = 0; r < rows; r++) {
+                    if (idx < ciphertext.length) {
+                        grid[r][c] = ciphertext[idx++];
+                    }
+                }
+            });
+
+            return grid.flat().join("");
+        }
+    </script>
+</body>
+
+</html>

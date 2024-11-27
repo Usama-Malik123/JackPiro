@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Basic meta tags -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <title>Cryptography Playground</title>
+
+    <!-- CSS for the theme and layout -->
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        h1 {
+            color: #ff0000;
+            margin-top: 30px;
+        }
+
+        .container {
+            margin: 50px auto;
+            padding: 20px;
+            width: 100%;
+            max-width: 600px;
+            border: 2px solid #ff0000;
+            border-radius: 10px;
+            box-sizing: border-box;
+        }
+
+        .input-container {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            padding: 10px;
+            width: 100%; /* Ensure full width */
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ff0000;
+            background-color: #333;
+            color: #fff;
+            box-sizing: border-box; /* Include padding in the width calculation */
+            display: block;
+            margin-left: auto;
+            margin-right: auto; /* Center the input horizontally */
+        }
+
+        .btn {
+            background-color: #ff0000;
+            color: #fff;
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background-color: #cc0000;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #ff0000;
+        }
+
+        #bruteForceResults {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #ff0000;
+            text-align: left;
+        }
+
+        .result-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .result-list li {
+            padding: 5px;
+            border-bottom: 1px solid #ff0000;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Affine Cipher</h1>
+
+        <!-- Plaintext input -->
+        <div class="input-container">
+            <label for="plaintext">Plaintext:</label>
+            <input type="text" id="plaintext" placeholder="Enter text (letters and spaces)">
+        </div>
+
+        <!-- Key A input -->
+        <div class="input-container">
+            <label for="keyA">Key A (a value between 1 and 25):</label>
+            <input type="number" id="keyA" min="1" max="25">
+        </div>
+
+        <!-- Key B input -->
+        <div class="input-container">
+            <label for="keyB">Key B (a value between 0 and 25):</label>
+            <input type="number" id="keyB" min="0" max="25">
+        </div>
+
+        <!-- Encrypt and Decrypt buttons -->
+        <button class="btn" onclick="affineEncrypt()">Encrypt</button>
+        <button class="btn" onclick="affineDecrypt()">Decrypt</button>
+
+        <!-- Result fields -->
+        <div class="result" id="ciphertext"></div>
+        <div class="result" id="decryptedText"></div>
+    </div>
+
+    <script>
+        // Check if a number is coprime with 26
+        function gcd(a, b) {
+            while (b != 0) {
+                let temp = b;
+                b = a % b;
+                a = temp;
+            }
+            return a;
+        }
+
+        // Affine Cipher encryption
+        function affineEncrypt() {
+            const plaintext = document.getElementById("plaintext").value.toUpperCase().replace(/ /g, '');
+            const keyA = parseInt(document.getElementById("keyA").value);
+            const keyB = parseInt(document.getElementById("keyB").value);
+
+            // Validate input
+            if (!plaintext || keyA < 1 || keyA > 25 || keyB < 0 || keyB > 25 || /[^A-Z ]/.test(plaintext)) {
+                alert("Please provide valid input. Only alphabets and spaces allowed in plaintext and keyA between 1-25, keyB between 0-25.");
+                return;
+            }
+
+            // Check if keyA is coprime with 26
+            if (gcd(keyA, 26) !== 1) {
+                alert("Key A must be coprime with 26.");
+                return;
+            }
+
+            let ciphertext = '';
+            for (let i = 0; i < plaintext.length; i++) {
+                if (plaintext[i] >= 'A' && plaintext[i] <= 'Z') {
+                    const x = plaintext.charCodeAt(i) - 'A'.charCodeAt(0);
+                    const encryptedChar = String.fromCharCode(((keyA * x + keyB) % 26) + 'A'.charCodeAt(0));
+                    ciphertext += encryptedChar;
+                } else {
+                    ciphertext += plaintext[i]; // Add spaces as they are
+                }
+            }
+
+            document.getElementById("ciphertext").textContent = `Ciphertext: ${ciphertext}`;
+        }
+
+        // Affine Cipher decryption
+        function affineDecrypt() {
+            const ciphertext = document.getElementById("ciphertext").textContent.replace('Ciphertext: ', '');
+            const keyA = parseInt(document.getElementById("keyA").value);
+            const keyB = parseInt(document.getElementById("keyB").value);
+
+            // Validate input
+            if (!ciphertext || keyA < 1 || keyA > 25 || keyB < 0 || keyB > 25) {
+                alert("Please provide valid input.");
+                return;
+            }
+
+            // Check if keyA is coprime with 26
+            if (gcd(keyA, 26) !== 1) {
+                alert("Key A must be coprime with 26.");
+                return;
+            }
+
+            // Find modular inverse of keyA
+            let aInv = -1;
+            for (let i = 1; i < 26; i++) {
+                if ((keyA * i) % 26 === 1) {
+                    aInv = i;
+                    break;
+                }
+            }
+
+            let decryptedText = '';
+            for (let i = 0; i < ciphertext.length; i++) {
+                if (ciphertext[i] >= 'A' && ciphertext[i] <= 'Z') {
+                    const y = ciphertext.charCodeAt(i) - 'A'.charCodeAt(0);
+                    const decryptedChar = String.fromCharCode(((aInv * (y - keyB)) % 26 + 26) % 26 + 'A'.charCodeAt(0));
+                    decryptedText += decryptedChar;
+                } else {
+                    decryptedText += ciphertext[i]; // Add spaces as they are
+                }
+            }
+
+            document.getElementById("decryptedText").textContent = `Decrypted Text: ${decryptedText}`;
+        }
+    </script>
+</body>
+
+</html>

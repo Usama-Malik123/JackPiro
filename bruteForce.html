@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Basic meta tags -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <title>Brute Force Cipher</title>
+
+    <!-- CSS for the theme and layout -->
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        h1 {
+            color: #ff0000;
+            margin-top: 0;
+        }
+
+        .container {
+            padding: 20px;
+            width: 100%;
+            max-width: 600px;
+            border: 2px solid #ff0000;
+            border-radius: 10px;
+            box-sizing: border-box;
+            background-color: #222;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .input-container {
+            margin-bottom: 20px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .input-container label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"] {
+    padding: 10px;
+    width: 100%;
+    max-width: 400px; /* Added to limit the width for better centering */
+    margin: 0 auto; /* Center horizontally */
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ff0000;
+    background-color: #333;
+    color: #fff;
+    display: block; /* Ensures the element respects margin settings */
+}
+
+
+        .btn {
+            background-color: #ff0000;
+            color: #fff;
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            max-width: 500px;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background-color: #cc0000;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #ff0000;
+            text-align: left;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            width: 100%;
+            max-width: 500px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Brute Force Cipher</h1>
+
+        <!-- Ciphertext input -->
+        <div class="input-container">
+            <label for="ciphertext">Ciphertext:</label>
+            <input type="text" id="ciphertext" placeholder="Enter ciphertext to decrypt">
+        </div>
+
+        <!-- Brute Force button -->
+        <button class="btn" onclick="bruteForceDecrypt()">Brute Force Decrypt</button>
+
+        <!-- Result field -->
+        <div class="result" id="bruteForceResult"></div>
+    </div>
+
+    <script>
+        // Brute Force Cipher decryption
+        function bruteForceDecrypt() {
+            const ciphertext = document.getElementById("ciphertext").value.toUpperCase().replace(/[^A-Z ]/g, '');
+
+            // Validate input
+            if (!ciphertext) {
+                alert("Please provide valid ciphertext. Only alphabets and spaces are allowed.");
+                return;
+            }
+
+            let results = '';
+            for (let shift = 1; shift <= 25; shift++) {
+                let decryptedText = '';
+
+                // Decrypt using current shift
+                for (let i = 0; i < ciphertext.length; i++) {
+                    const char = ciphertext[i];
+                    if (char >= 'A' && char <= 'Z') {
+                        const charCode = char.charCodeAt(0) - 'A'.charCodeAt(0);
+                        const decryptedChar = String.fromCharCode(((charCode - shift + 26) % 26) + 'A'.charCodeAt(0));
+                        decryptedText += decryptedChar;
+                    } else {
+                        decryptedText += char; // Add spaces as they are
+                    }
+                }
+
+                // Display the result for this shift
+                results += `Shift ${shift}: ${decryptedText}\n`;
+            }
+
+            // Show all possible decrypted texts
+            document.getElementById("bruteForceResult").innerHTML = results;
+        }
+    </script>
+</body>
+
+</html>

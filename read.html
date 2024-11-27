@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Information Security</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: #fff;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background-color: #111;
+            overflow: hidden;
+            border-bottom: 2px solid #ff0000;
+            padding: 15px;
+        }
+
+        .navbar a {
+            float: left;
+            color: #fff;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        .navbar a:hover {
+            background-color: #ff0000;
+            color: white;
+        }
+
+        /* Header Styling */
+        .header {
+            text-align: center;
+            padding: 50px;
+            background-color: #000;
+        }
+
+        .header h1 {
+            color: #ff0000;
+            font-size: 50px;
+            margin: 0;
+        }
+
+        .header span {
+            font-size: 20px;
+            color: #fff;
+        }
+
+        /* Content Section */
+        .content {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            border: 2px solid #ff0000;
+            border-radius: 10px;
+            background-color: #111;
+            color: #fff;
+            text-align: justify;
+        }
+
+        .content h2 {
+            color: #ff0000;
+            font-size: 30px;
+            margin-bottom: 15px;
+        }
+
+        .content p {
+            line-height: 1.6;
+            font-size: 18px;
+        }
+
+        /* Image Styling */
+        .content img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        /* Button Styling */
+        .btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 24px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #ff0000;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #cc0000;
+        }
+
+        /* Footer Styling */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #111;
+            border-top: 2px solid #ff0000;
+            margin-top: 40px;
+        }
+
+        .footer p {
+            margin: 0;
+            color: #fff;
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>Information Security</h1>
+        <span>Learn and Explore Cryptographic Techniques for Securing Information</span>
+    </div>
+
+    <div class="content">
+        <h2>Understanding Cryptography</h2>
+        <p>
+            Cryptography plays a vital role in ensuring the confidentiality, integrity, and authenticity of sensitive information. It transforms plain data into encrypted forms that can only be read by authorized parties, preventing unauthorized access and manipulation.
+        </p>
+
+        <h2>Key Techniques and Concepts</h2>
+        <p>
+            Cryptographic methods include symmetric encryption, where the same key is used for both encryption and decryption, and asymmetric encryption, which utilizes a pair of public and private keys. Hashing generates a fixed-size hash value from input data, ensuring data integrity.
+        </p>
+
+        <img src="images/abcd.png" alt="Cryptography Illustration">
+
+        <h2>Modern Applications of Cryptography</h2>
+        <p>
+            Cryptography is crucial in securing online transactions, protecting user data, and enabling secure communications. Applications include blockchain technology, digital signatures, and end-to-end encryption in messaging apps.
+        </p>
+
+        <img src="images/Applications.png" alt="Modern Cryptography Applications">
+
+        <h2>Advantages of Cryptographic Security</h2>
+        <p>
+            The primary advantages of cryptography include the protection of data privacy, prevention of data tampering, and assurance of data authenticity. It plays a crucial role in online banking, e-commerce, and secure messaging, safeguarding sensitive information and maintaining user trust.
+        </p>
+
+        <a href="#" class="btn" onclick="goBack()">⬅ Go Back</a>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2024 All Rights Reserved. Bilal</p>
+    </div>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+
+</body>
+
+</html>
