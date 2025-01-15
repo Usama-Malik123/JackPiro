@@ -3,7 +3,7 @@ name: CodeQL Security Analysis
 on:
   push:
     branches:
-      - '**' # Triggers on all branches
+      - '**'
 
 jobs:
   security-analysis:
