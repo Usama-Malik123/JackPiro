@@ -1,6 +1,5 @@
-name: Push-to-EC2
+name: Deploy to Localhost
 
-# Trigger deployment only on push to main branch
 on:
   push:
     branches:
@@ -8,31 +7,25 @@ on:
 
 jobs:
   deploy:
-    name: Deploy to EC2 on master branch push
+    name: Deploy to Local Nginx on Port 8080
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout the files
+      - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Deploy to Server 1
-        uses: easingthemes/ssh-deploy@main
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-          REMOTE_HOST: ${{ secrets.HOST_DNS }}
-          REMOTE_USER: ${{ secrets.USERNAME }}
-          TARGET: ${{ secrets.TARGET_DIR }}
+      - name: Install Nginx
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y nginx
 
-      - name: Executing remote ssh commands using ssh key
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST_DNS }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            sudo apt-get -y update
-            sudo apt-get install -y apache2
-            sudo systemctl start apache2
-            sudo systemctl enable apache2
-            cd home
-            sudo rsync -av --delete . /var/www/html/
+      - name: Deploy Website Files
+        run: |
+          sudo rm -rf /var/www/html/*
+          sudo cp -r * /var/www/html/
+          sudo systemctl restart nginx
+
+      - name: Configure Nginx to Serve on Port 8080
+        run: |
+          sudo sed -i 's/listen 80;/listen 8080;/g' /etc/nginx/sites-available/default
+          sudo systemctl restart nginx
