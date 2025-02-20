@@ -1,34 +1,30 @@
-name: Build and Run on Nginx
+name: Deploy to Localhost
 
 on:
   push:
     branches:
       - main
-  pull_request:
-
 jobs:
   deploy:
+    name: Deploy to Local Nginx on Port 8080
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
       - name: Install Nginx
-        run: sudo apt-get update && sudo apt-get install -y nginx
-
-      - name: Configure Nginx for Port 8080
         run: |
-          sudo sed -i 's/listen 80 default_server;/listen 8080;/' /etc/nginx/sites-available/default
-          sudo sed -i 's|root /var/www/html;|root /usr/share/nginx/html;|' /etc/nginx/sites-available/default
+          sudo apt-get update -y
+          sudo apt-get install -y nginx
 
-      - name: Copy Application Files
+      - name: Deploy Website Files
         run: |
-          sudo rm -rf /usr/share/nginx/html/*
-          sudo cp -r . /usr/share/nginx/html/
+          sudo rm -rf /var/www/html/*
+          sudo cp -r * /var/www/html/
+          sudo systemctl restart nginx
 
-      - name: Restart Nginx
-        run: sudo systemctl restart nginx
-
-      - name: Verify Nginx is Running
-        run: curl -I http://localhost:8080 || (echo "Nginx failed to start" && exit 1)
+      - name: Configure Nginx to Serve on Port 8080
+        run: |
+          sudo sed -i 's/listen 80;/listen 8080;/g' /etc/nginx/sites-available/default
+          sudo systemctl restart nginx
