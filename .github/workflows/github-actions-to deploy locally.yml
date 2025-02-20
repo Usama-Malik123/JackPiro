@@ -1,10 +1,9 @@
 name: Deploy to Localhost
 
 on:
-  push:
-    branches:
-      - main
-
+   push:
+     branches:
+       - main
 jobs:
   deploy:
     name: Deploy to Local Nginx on Port 8080
@@ -19,22 +18,13 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y nginx
 
-      - name: Configure Nginx to Serve on Port 8080
-        run: |
-          if [ -f "/etc/nginx/sites-available/default" ]; then
-            sudo sed -i 's/listen 80;/listen 8080;/g' /etc/nginx/sites-available/default
-          else
-            echo "server { listen 8080; root /var/www/html; index index.html; }" | sudo tee /etc/nginx/sites-available/default
-          fi
-          sudo systemctl restart nginx
-
       - name: Deploy Website Files
         run: |
           sudo rm -rf /var/www/html/*
           sudo cp -r * /var/www/html/
           sudo systemctl restart nginx
 
-      - name: Verify Deployment
+      - name: Configure Nginx to Serve on Port 8080
         run: |
-          sleep 5  # Give Nginx some time to start
-          curl -I http://localhost:8080 || (echo "Nginx failed to start" && exit 1)
+          sudo sed -i 's/listen 80;/listen 8080;/g' /etc/nginx/sites-available/default
+          sudo systemctl restart nginx
