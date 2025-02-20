@@ -27,4 +27,4 @@ jobs:
       - name: Configure Nginx to Serve on Port 8080
         run: |
           sudo sed -i 's/listen 80;/listen 8080;/g' /etc/nginx/sites-available/default
-          sudo systemctl restart nginx
+          
