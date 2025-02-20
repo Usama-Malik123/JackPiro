@@ -1,9 +1,9 @@
 name: Deploy to Localhost
 
 on:
-   push:
-     branches:
-       - main
+  push:
+    branches:
+      - main
 jobs:
   deploy:
     name: Deploy to Local Nginx on Port 8080
