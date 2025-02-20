@@ -22,7 +22,6 @@ jobs:
         run: |
           sudo rm -rf /var/www/html/*
           sudo cp -r * /var/www/html/
-          sudo systemctl restart nginx
 
       - name: Configure Nginx to Serve on Port 8080
         run: |
