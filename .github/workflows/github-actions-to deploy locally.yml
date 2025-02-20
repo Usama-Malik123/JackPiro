@@ -18,12 +18,14 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y nginx
 
-      - name: Deploy Website Files
-        run: |
-          sudo rm -rf /var/www/html/*
-          sudo cp -r * /var/www/html/
 
       - name: Configure Nginx to Serve on Port 8080
         run: |
           sudo sed -i 's/listen 80;/listen 8080;/g' /etc/nginx/sites-available/default
+          sudo systemctl restart nginx
+
+      - name: Deploy Website Files
+        run: |
+          sudo rm -rf /var/www/html/*
+          sudo cp -r * /var/www/html/
           sudo systemctl restart nginx
