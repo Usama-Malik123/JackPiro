@@ -1,4 +1,4 @@
-name: MDocker Image Push
+name: Docker Image Push
 
 on:
   workflow_dispatch: 
