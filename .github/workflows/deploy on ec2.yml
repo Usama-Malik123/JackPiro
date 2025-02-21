@@ -34,4 +34,4 @@ jobs:
             sudo systemctl start apache2
             sudo systemctl enable apache2
             cd home
-            sudo rsync -av --delete $SRC_DIR/ $DEST_DIR/
+            sudo mv * /var/www/html
