@@ -24,7 +24,7 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t my-web-app:latest.
+          docker build -t my-web-app .
 
       - name: Tag Docker Image
         run: |
@@ -32,4 +32,4 @@ jobs:
 
       - name: Push Docker Image to AWS ECR
         run: |
-          docker push 014498632254.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/my-web-app:latest
+          docker push 014498632254.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/my-web-app
