@@ -28,8 +28,8 @@ jobs:
 
       - name: Tag Docker Image
         run: |
-          docker tag my-web-app:latest 014498632254.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/my-web-app:latest
+          docker tag my-web-app:latest 014498632254.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/my-web-app:jackpiro
 
       - name: Push Docker Image to AWS ECR
         run: |
-          docker push 014498632254.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/my-web-app:jackpiro
+          docker push 014498632254.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/my-web-app:latest
